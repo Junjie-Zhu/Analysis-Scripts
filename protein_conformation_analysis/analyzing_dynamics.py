@@ -1,69 +1,8 @@
 import biotite.structure as struc
-import biotite.structure.io as strucio
 import numpy as np
 import scipy
 import tqdm
 from scipy.spatial.distance import squareform
-
-
-def read_pdb(file_path):
-    """
-    Read a PDB file and return a `biotite` `AtomArray` object.
-
-    Parameters
-    ----------
-    file_path : str
-        The path to the PDB file.
-
-    Returns
-    -------
-    biotite.structure.AtomArray
-        The `AtomArray` object representing the PDB file.
-    """
-    return strucio.load_structure(file_path)
-
-
-class PdbParser():
-    def __init__(self,
-                 pdb_path,
-                 traj_path=None):
-
-        self.structure = read_pdb(pdb_path)
-
-        self.mode = 'single' if self.structure.stack_depth() == 1 else 'multi'
-
-    def split_models(self):
-        """
-        Split the structure into multiple models.
-
-        Returns
-        -------
-        list
-            A list of `AtomArray` objects, each representing a model.
-        """
-        assert self.mode == 'multi', 'The input structure is not a multi-model structure.'
-        assert isinstance(self.structure, struc.AtomArrayStack), 'The structure is already split into models.'
-
-        self.structure = [self.structure[model] for model in range(self.structure.stack_depth())]
-
-    def select_atoms(self, atom_name):
-        """
-        Select atoms with the given atom name.
-
-        Parameters
-        ----------
-        atom_name : str
-            The name of the atom to select.
-
-        Returns
-        -------
-        biotite.structure.AtomArray
-            The `AtomArray` object containing the selected atoms.
-        """
-        if self.mode == 'single':
-            return self.structure[self.structure.atom_name == atom_name]
-        else:
-            return [model[model.atom_name == atom_name] for model in self.structure]
 
 
 def rmsd_first2all(structure):
