@@ -17,5 +17,5 @@ We intend to gather the scripts used for data analysis and plotting from our pre
   - "atom_mask": np.array(float32)  [N_res, 37]
   - "aatype": np.array(int32)  [N_res]
   - "residue_index": np.array(int32)  [N_res]
-  - "chain_ids": np.array(str)  [N_res]
+  - "chain_ids": np.array(int32)  [N_res]
 

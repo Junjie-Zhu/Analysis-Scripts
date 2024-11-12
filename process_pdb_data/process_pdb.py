@@ -2,6 +2,7 @@ import argparse
 import collections
 import os
 import pickle
+import string
 from functools import partial
 from glob import glob
 from typing import Dict
@@ -13,6 +14,21 @@ import biotite.structure.io as strucio
 import pandas as pd
 
 import residue_constants as rc
+
+# Global map from chain characters to integers. e.g, A -> 0, B -> 1, etc.
+ALPHANUMERIC = string.ascii_letters + string.digits + ' '
+CHAIN_TO_INT = {
+    chain_char: i for i, chain_char in enumerate(ALPHANUMERIC)
+}
+
+
+def chain_str_to_int(chain_str: str):
+    chain_int = 0
+    if len(chain_str) == 1:
+        return CHAIN_TO_INT[chain_str]
+    for i, chain_char in enumerate(chain_str):
+        chain_int += CHAIN_TO_INT[chain_char] + (i * len(ALPHANUMERIC))
+    return chain_int
 
 
 def write_to_pkl(
@@ -94,7 +110,7 @@ def instantiate_protein(structure: struc.AtomArray) -> dict:
         atom_positions.append(pos)
         atom_mask.append(mask)
         residue_index.append(residues[0].res_id)
-        chain_ids.append(residues[0].chain_id)
+        chain_ids.append(chain_str_to_int(residues[0].chain_id))
 
     # split by chain_ids
     chain_ids = np.array(chain_ids)
